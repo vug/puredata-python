@@ -8,9 +8,10 @@ ifeq ($(TARGET),purr)
 	INCLUDE = -I "$(PDPATH)/include"
 endif
 
-# WINDOWS
-LDFLAGS = --export-all-symbols -shared
+WINLDFLAGS = --export-all-symbols -shared
+LDLAGS = $(WINLDFLAGS)
 DLLS = "$(PDPATH)/bin/pd.dll"
+EXTRA = "$(PDPATH)/extra"
 
 all: helloworld.dll
 
@@ -23,3 +24,9 @@ helloworld.o: helloworld.c
 
 clean:
 	rm helloworld.o helloworld.dll
+
+install:
+	cp helloworld.dll $(EXTRA)
+
+uninstall:
+	cd $(EXTRA) && rm helloworld.dll
