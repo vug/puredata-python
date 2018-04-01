@@ -1,32 +1,25 @@
-# Vanilla Pure Data
-PDPATH = C:/Users/veliu/Downloads/pd
-INCLUDE = -I "$(PDPATH)/src"
+PDPATH = /Applications/Pd-0.48-1.app/Contents/Resources
+INCLUDE = -I $(PDPATH)/src
 
-# Purr Data
-ifeq ($(TARGET),purr)
-  PDPATH = C:/Program Files (x86)/Purr Data
-	INCLUDE = -I "$(PDPATH)/include"
-endif
+LIBEXTENSION = pd_darwin
+LDFLAGS = -undefined suppress -flat_namespace -bundle
+SHAREDFLAGS = -undefined dynamic_lookup
+VERFLAGS = -macosx_version_min 10.12
+EXTERNALS = /Users/ugur/Documents/Pd/externals
 
-WINLDFLAGS = --export-all-symbols -shared
-LDLAGS = $(WINLDFLAGS)
-DLLS = "$(PDPATH)/bin/pd.dll"
-EXTRA = "$(PDPATH)/extra"
+all: helloworld.$(LIBEXTENSION)
 
-all: helloworld.dll
-
-helloworld.dll: helloworld.o
-	ld $(LDFLAGS) -o helloworld.dll helloworld.o $(DLLS)
-	strip --strip-unneeded helloworld.dll
+helloworld.$(LIBEXTENSION): helloworld.o
+	ld $(LDFLAGS) $(SHAREDFLAGS) $(VERFLAGS) -o helloworld.$(LIBEXTENSION) helloworld.o
 
 helloworld.o: helloworld.c
-	gcc $(INCLUDE) -c helloworld.c -o helloworld.o
+	clang $(INCLUDE) -c helloworld.c -o helloworld.o
 
 clean:
-	rm helloworld.o helloworld.dll
+	rm helloworld.o helloworld.$(LIBEXTENSION)
 
 install:
-	cp helloworld.dll $(EXTRA)
+	cp helloworld.$(LIBEXTENSION) $(EXTERNALS)
 
 uninstall:
-	cd $(EXTRA) && rm helloworld.dll
+	cd $(EXTERNALS) && rm helloworld.$(LIBEXTENSION)
