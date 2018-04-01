@@ -1,20 +1,11 @@
-TARGET=32
-
-ifeq ($(TARGET),32)
-	CC = "c:/mingw/bin/gcc.exe"
-	INCLUDE = -I "c:/Users/veliu/Miniconda3/include"
-	LIBS = -L "c:/Users/veliu/Miniconda3/libs"
-	LIBRARIES = -lpython36
-endif
-ifeq ($(TARGET),64)
-	CC = "C:/mingw-w64/mingw64/bin/gcc.exe"
-	INCLUDE = -I "c:/Users/veliu/Anaconda3/include"
-	LIBS = -L "c:/Users/veliu/Anaconda3/libs"
-	LIBRARIES = -lpython35
-endif
+CC = clang
+CFLAGS = -arch x86_64 -g
+INCLUDE = -I/Users/ugur/anaconda3/include/python3.5m -I/Users/ugur/anaconda3/include
+LIBS = -lpython3.5m -ldl -framework CoreFoundation
 
 all:
-	$(CC) $(INCLUDE) $(LIBS) -o helloworld.exe helloworld.c $(LIBRARIES)
+	gcc $(INCLUDE) -o helloworld.o -c helloworld.c
+	clang -L/Users/ugur/anaconda3/lib $(LIBS) -o helloworld helloworld.o
 
 clean:
-	rm helloworld.exe
+	rm helloworld
