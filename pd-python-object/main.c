@@ -13,8 +13,11 @@ typedef struct _runpython {
 } t_runpython;
 
 
-void runpython_bang(t_runpython *x) {
-  post("I'm going to run a Python function call and print the result.");
+void runpython_bang(t_runpython *obj) {
+  if(obj->pModule == NULL) {
+    post("Object banged automatically while being created. Python module not loaded yet. Not going to call.");
+    return;
+  }
 }
 
 
