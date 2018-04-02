@@ -15,24 +15,39 @@ void helloworld_bang(t_helloworld *x)
   post("Hello world !!");
 }
 
+char * getString(PyObject * obj) {
+  PyObject *str_of_obj = PyObject_Str(obj);
+  PyObject *temp_bytes = PyUnicode_AsEncodedString(str_of_obj, "UTF-8", "strict");
+  char *str = PyBytes_AS_STRING(temp_bytes);
+  // my_result = strdup(s1);  // from: <string.h>
+  return str;
+}
+
 
 void *helloworld_new(void)
 {
   t_helloworld *x = (t_helloworld *)pd_new(helloworld_class);
-  int result;
-  char *out_str;
+  int runState;
+  char *str_to_pd = (char*)malloc(100 * sizeof(char));
+  char *result_str;
+  PyObject* locals = PyDict_New();
+  PyObject* globals = PyDict_New();
+  PyObject* resultObject;
 
-  post("generating new helloworld object.");
+  post("generating new helloworld object...");
 
   Py_Initialize();
-  result = PyRun_SimpleString(
-    "from time import time,ctime\n"
-    "print('Today is',ctime(time())\n)"
-  );
 
-  out_str = (char*)malloc(100 * sizeof(char));
-  sprintf(out_str, "result: %d", result);
-  post(out_str);
+  PyMapping_SetItemString(globals, "time", PyImport_ImportModule("time"));
+  resultObject = PyRun_String(
+    "time.ctime(time.time())\n",
+     Py_eval_input,
+     locals,
+     globals
+  );
+  result_str = getString(resultObject);
+  sprintf(str_to_pd, "PyRun_String result: %s", result_str);
+  post(str_to_pd);
 
   return (void *)x;
 }
