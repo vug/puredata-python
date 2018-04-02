@@ -58,6 +58,7 @@ void *runpython_constructor(void) {
   post(str_to_pd);
 
   pModule = PyImport_Import(pName);
+  Py_DECREF(pName);
 
   if (pModule != NULL) {
     post("Module loaded.");
