@@ -29,10 +29,29 @@ void *runpython_constructor(void) {
   PyObject *pName, *pModule;
   char *result_str;
   char *str_to_pd = (char*)malloc(100 * sizeof(char));
+  PyObject* locals = PyDict_New();
+  PyObject* globals = PyDict_New();
+  PyObject* resultObject;
+  PyObject* sysPath;
+
 
   t_runpython *obj = (t_runpython *)pd_new(runpython_class);  /* Parent's constructor */
 
   Py_Initialize();
+  // Add current directory (from where we call the pd.exe) to Python's sys.path
+  // so that import statement can find the module if it is located in the same directory
+  sysPath = PySys_GetObject((char*)"path");
+  PyList_Append(sysPath, PyUnicode_DecodeFSDefault("."));
+
+  PyMapping_SetItemString(globals, "os", PyImport_ImportModule("os"));
+  resultObject = PyRun_String(
+    "os.getcwd()\n",
+    Py_eval_input, locals, globals
+  );
+  result_str = getString(resultObject);
+  sprintf(str_to_pd, "os.getcwd(): %s", result_str);
+  post(str_to_pd);
+
   pName = PyUnicode_DecodeFSDefault("generate");
   result_str = getString(pName);
   sprintf(str_to_pd, "Going to load module: %s", result_str);
@@ -41,6 +60,7 @@ void *runpython_constructor(void) {
   pModule = PyImport_Import(pName);
 
   if (pModule != NULL) {
+    post("Module loaded.");
   }
   else {
     PyErr_Print();
