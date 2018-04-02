@@ -1,0 +1,48 @@
+BIT=32
+PDDIST=vanilla
+
+# Vanilla Pure Data
+ifeq ($(PDDIST),vanilla)
+	PDPATH = C:/Users/veliu/Downloads/pd
+	PDINCLUDE = -I "$(PDPATH)/src"
+endif
+# Purr Data
+ifeq ($(PDDIST),purr)
+  PDPATH = C:/Program Files (x86)/Purr Data
+	PDINCLUDE = -I "$(PDPATH)/include"
+endif
+
+ifeq ($(BIT),32)
+	CC = "c:/mingw/bin/gcc.exe"
+	INCLUDE = $(PDINCLUDE) -I "c:/Users/veliu/Miniconda3/include"
+	LIBS = -L "c:/Users/veliu/Miniconda3/libs"
+	LIBRARIES = -lpython36
+endif
+ifeq ($(BIT),64)
+	CC = "C:/mingw-w64/mingw64/bin/gcc.exe"
+	INCLUDE = $(PDINCLUDE) -I "c:/Users/veliu/Anaconda3/include"
+	LIBS = -L "c:/Users/veliu/Anaconda3/libs"
+	LIBRARIES = -lpython35
+endif
+
+LDLAGS = --export-all-symbols -shared
+DLLS = "$(PDPATH)/bin/pd.dll"
+EXTERNALS = C:/Users/veliu/Documents/Pd/externals
+
+all: helloworld.dll
+
+helloworld.dll: helloworld.o
+	ld $(LDLAGS) $(LIBS) -o helloworld.dll helloworld.o $(DLLS) $(LIBRARIES) -lmsvcrt
+	strip --strip-unneeded helloworld.dll
+
+helloworld.o: main.c
+	gcc $(INCLUDE) -c main.c -o helloworld.o
+
+clean:
+	rm helloworld.o helloworld.dll
+
+install:
+	cp helloworld.dll $(EXTERNALS)
+
+uninstall:
+	cd $(EXTERNALS) && rm helloworld.dll

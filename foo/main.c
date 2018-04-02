@@ -1,5 +1,6 @@
+#include <stdlib.h>
 #include "m_pd.h"
-// #include "Python.h"
+#include "Python.h"
 
 static t_class *helloworld_class;
 
@@ -18,10 +19,20 @@ void helloworld_bang(t_helloworld *x)
 void *helloworld_new(void)
 {
   t_helloworld *x = (t_helloworld *)pd_new(helloworld_class);
-  post("foo!");
-  // Py_Initialize();
-  // PyRun_SimpleString("from time import time,ctime\n"
-  //                    "print('Today is',ctime(time())\n)");
+  int result;
+  char *out_str;
+
+  post("generating new helloworld object.");
+
+  Py_Initialize();
+  result = PyRun_SimpleString(
+    "from time import time,ctime\n"
+    "print('Today is',ctime(time())\n)"
+  );
+
+  out_str = (char*)malloc(100 * sizeof(char));
+  sprintf(out_str, "result: %d", result);
+  post(out_str);
 
   return (void *)x;
 }
