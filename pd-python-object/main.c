@@ -34,6 +34,7 @@ void *runpython_constructor(void) {
   PyObject* resultObject;
   PyObject* sysPath;
 
+  PyObject* pX;
 
   t_runpython *obj = (t_runpython *)pd_new(runpython_class);  /* Parent's constructor */
 
@@ -65,6 +66,12 @@ void *runpython_constructor(void) {
     post("Failed to load module.");
     return (void *)obj;
   }
+
+  post("Module loaded.");
+  pX = PyObject_GetAttrString(pModule, "x");
+  result_str = getString(pX);
+  sprintf(str_to_pd, "x = %s", result_str);
+  post(str_to_pd);
 
   return (void *)obj;
 }
