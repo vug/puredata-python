@@ -33,9 +33,14 @@ void runpython_bang(t_runpython *obj) {
   pArgs = PyTuple_New(0);  // Empty tuple
   pFunc1 = PyObject_GetAttrString(obj->pModule, "get_random_note");
   if(!PyCallable_Check(pFunc1)) {
-    post("object is not callable");
+    post("Python object is not callable");
     return;
   }
+
+  pResult1 = PyObject_CallObject(pFunc1, pArgs);
+  result_str = getString(pResult1);
+  sprintf(str_to_pd, "result of get_random_note: %s", result_str);
+  post(str_to_pd);
 }
 
 
