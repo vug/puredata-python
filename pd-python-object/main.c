@@ -26,33 +26,26 @@ char * getString(PyObject * obj) {
 
 
 void *runpython_constructor(void) {
+  PyObject *pName, *pModule;
+  char *result_str;
+  char *str_to_pd = (char*)malloc(100 * sizeof(char));
+
   t_runpython *obj = (t_runpython *)pd_new(runpython_class);  /* Parent's constructor */
 
-
-
-  int runState;
-  char *str_to_pd = (char*)malloc(100 * sizeof(char));
-  char *result_str;
-  PyObject* locals = PyDict_New();
-  PyObject* globals = PyDict_New();
-  PyObject* resultObject;
-
-  post("generating new helloworld object...");
-
   Py_Initialize();
-
-  PyMapping_SetItemString(globals, "time", PyImport_ImportModule("time"));
-  resultObject = PyRun_String(
-    "time.ctime(time.time())\n",
-     Py_eval_input,
-     locals,
-     globals
-  );
-  result_str = getString(resultObject);
-  sprintf(str_to_pd, "PyRun_String result: %s", result_str);
+  pName = PyUnicode_DecodeFSDefault("generate");
+  result_str = getString(pName);
+  sprintf(str_to_pd, "Going to load module: %s", result_str);
   post(str_to_pd);
 
+  pModule = PyImport_Import(pName);
 
+  if (pModule != NULL) {
+  }
+  else {
+    PyErr_Print();
+    post("Failed to load module.");
+  }
 
   return (void *)obj;
 }
