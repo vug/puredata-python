@@ -19,13 +19,23 @@ void runpython_bang(t_runpython *obj) {
     return;
   }
   PyObject* pX;
+  PyObject *pArgs;
+  PyObject *pFunc1, *pResult1;
   char *result_str;
   char *str_to_pd = (char*)malloc(100 * sizeof(char));
 
+  // Read global varible x from module
   pX = PyObject_GetAttrString(obj->pModule, "x");
   result_str = getString(pX);
   sprintf(str_to_pd, "x = %s", result_str);
   post(str_to_pd);
+
+  pArgs = PyTuple_New(0);  // Empty tuple
+  pFunc1 = PyObject_GetAttrString(obj->pModule, "get_random_note");
+  if(!PyCallable_Check(pFunc1)) {
+    post("object is not callable");
+    return;
+  }
 }
 
 
