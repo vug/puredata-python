@@ -1,34 +1,50 @@
-EXTERNALNAME = runpython
+BIT=32
+PDDIST=vanilla
 
 # Vanilla Pure Data
-PDPATH = C:/Users/veliu/Downloads/pd
-INCLUDE = -I "$(PDPATH)/src"
-
+ifeq ($(PDDIST),vanilla)
+	PDPATH = C:/Users/veliu/Downloads/pd
+	PDINCLUDE = -I "$(PDPATH)/src"
+endif
 # Purr Data
-ifeq ($(TARGET),purr)
+ifeq ($(PDDIST),purr)
   PDPATH = C:/Program Files (x86)/Purr Data
-	INCLUDE = -I "$(PDPATH)/include"
+	PDINCLUDE = -I "$(PDPATH)/include"
+endif
+PDEXTERNALS = C:/Users/veliu/Documents/Pd/externals
+
+ifeq ($(BIT),32)
+	CC = "c:/mingw/bin/gcc.exe"
+	PYTHONINCLUDE = -I "c:/Users/veliu/Miniconda3/include"
+	PYTHONLIBSPATH = -L "c:/Users/veliu/Miniconda3/libs"
+	PYTHONLIBRARIES = -lpython36
+endif
+ifeq ($(BIT),64)
+	CC = "C:/mingw-w64/mingw64/bin/gcc.exe"
+	PYTHONINCLUDE = -I "c:/Users/veliu/Anaconda3/include"
+	PYTHONLIBSPATH = -L "c:/Users/veliu/Anaconda3/libs"
+	PYTHONLIBRARIES = -lpython35
 endif
 
-WINLDFLAGS = --export-all-symbols -shared
-LDLAGS = $(WINLDFLAGS)
-DLLS = "$(PDPATH)/bin/pd.dll"
-EXTRA = "$(PDPATH)/extra"
+EXTERNALNAME = runpython
+INCLUDE = $(PDINCLUDE) $(PYTHONINCLUDE)
+LIBRARIES = $(PYTHONLIBRARIES) -lmsvcrt
+LDLAGS = --export-all-symbols -shared
 
 all: $(EXTERNALNAME).dll
 
-$(EXTERNALNAME).dll: $(EXTERNALNAME).o
-	ld $(LDFLAGS) -o $(EXTERNALNAME).dll $(EXTERNALNAME).o $(DLLS)
+$(EXTERNALNAME).dll: main.o
+	ld $(LDLAGS) $(PYTHONLIBSPATH) -o $(EXTERNALNAME).dll main.o "$(PDPATH)/bin/pd.dll" $(LIBRARIES)
 	strip --strip-unneeded $(EXTERNALNAME).dll
 
-$(EXTERNALNAME).o: main.c
-	gcc $(INCLUDE) -c main.c -o $(EXTERNALNAME).o
+main.o: main.c
+	gcc $(INCLUDE) -c main.c -o main.o
 
 clean:
-	rm $(EXTERNALNAME).o $(EXTERNALNAME).dll
+	rm main.o $(EXTERNALNAME).dll
 
 install:
-	cp $(EXTERNALNAME).dll $(EXTRA)
+	cp $(EXTERNALNAME).dll $(PDEXTERNALS)
 
 uninstall:
-	cd $(EXTRA) && rm $(EXTERNALNAME).dll
+	cd $(PDEXTERNALS) && rm $(EXTERNALNAME).dll
