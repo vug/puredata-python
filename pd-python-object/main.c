@@ -7,7 +7,8 @@ static t_class *runpython_class;
 
 
 typedef struct _runpython {
-  t_object  x_obj;
+  t_object x_obj;
+  PyObject* pModule;
 } t_runpython;
 
 
@@ -58,17 +59,17 @@ void *runpython_constructor(void) {
   sprintf(str_to_pd, "Going to load module: %s", result_str);
   post(str_to_pd);
 
-  pModule = PyImport_Import(pName);
+  obj->pModule = PyImport_Import(pName);
   Py_DECREF(pName);
 
-  if (pModule == NULL) {
+  if (obj->pModule == NULL) {
     PyErr_Print();
     post("Failed to load module.");
     return (void *)obj;
   }
 
   post("Module loaded.");
-  pX = PyObject_GetAttrString(pModule, "x");
+  pX = PyObject_GetAttrString(obj->pModule, "x");
   result_str = getString(pX);
   sprintf(str_to_pd, "x = %s", result_str);
   post(str_to_pd);
