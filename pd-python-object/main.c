@@ -60,12 +60,10 @@ void *runpython_constructor(void) {
   pModule = PyImport_Import(pName);
   Py_DECREF(pName);
 
-  if (pModule != NULL) {
-    post("Module loaded.");
-  }
-  else {
+  if (pModule == NULL) {
     PyErr_Print();
     post("Failed to load module.");
+    return (void *)obj;
   }
 
   return (void *)obj;
