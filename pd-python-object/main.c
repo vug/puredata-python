@@ -21,6 +21,7 @@ void runpython_bang(t_runpython *obj) {
   PyObject* pX;
   PyObject *pArgs;
   PyObject *pFunc1, *pResult1;
+  PyObject *pFunc2, *pResult2;
   char *result_str;
   char *str_to_pd = (char*)malloc(100 * sizeof(char));
 
@@ -40,6 +41,17 @@ void runpython_bang(t_runpython *obj) {
   pResult1 = PyObject_CallObject(pFunc1, pArgs);
   result_str = getString(pResult1);
   sprintf(str_to_pd, "result of get_random_note: %s", result_str);
+  post(str_to_pd);
+
+  pFunc2 = PyObject_GetAttrString(obj->pModule, "get_sequence");
+  if(!PyCallable_Check(pFunc2)) {
+    post("Python object is not callable");
+    return;
+  }
+
+  pResult2 = PyObject_CallObject(pFunc2, pArgs);
+  result_str = getString(pResult2);
+  sprintf(str_to_pd, "result of get_sequence: %s", result_str);
   post(str_to_pd);
 }
 
