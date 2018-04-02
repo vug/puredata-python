@@ -18,6 +18,14 @@ void runpython_bang(t_runpython *obj) {
     post("Object banged automatically while being created. Python module not loaded yet. Not going to call.");
     return;
   }
+  PyObject* pX;
+  char *result_str;
+  char *str_to_pd = (char*)malloc(100 * sizeof(char));
+
+  pX = PyObject_GetAttrString(obj->pModule, "x");
+  result_str = getString(pX);
+  sprintf(str_to_pd, "x = %s", result_str);
+  post(str_to_pd);
 }
 
 
@@ -73,10 +81,6 @@ void *runpython_constructor(void) {
   }
 
   post("Module loaded.");
-  pX = PyObject_GetAttrString(obj->pModule, "x");
-  result_str = getString(pX);
-  sprintf(str_to_pd, "x = %s", result_str);
-  post(str_to_pd);
 
   return (void *)obj;
 }
