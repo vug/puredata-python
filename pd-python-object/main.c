@@ -2,6 +2,7 @@
 #include "m_pd.h"
 #include "Python.h"
 
+char * getString(PyObject * obj);
 
 static t_class *runpython_class;
 
