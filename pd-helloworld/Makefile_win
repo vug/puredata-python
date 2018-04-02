@@ -8,15 +8,14 @@ ifeq ($(TARGET),purr)
 	INCLUDE = -I "$(PDPATH)/include"
 endif
 
-WINLDFLAGS = --export-all-symbols -shared
-LDLAGS = $(WINLDFLAGS)
+LDLAGS = --export-all-symbols -shared
 DLLS = "$(PDPATH)/bin/pd.dll"
-EXTRA = "$(PDPATH)/extra"
+EXTERNALS = C:/Users/veliu/Documents/Pd/externals
 
 all: helloworld.dll
 
 helloworld.dll: helloworld.o
-	ld $(LDFLAGS) -o helloworld.dll helloworld.o $(DLLS)
+	ld $(LDLAGS) -o helloworld.dll helloworld.o $(DLLS)
 	strip --strip-unneeded helloworld.dll
 
 helloworld.o: helloworld.c
@@ -26,7 +25,7 @@ clean:
 	rm helloworld.o helloworld.dll
 
 install:
-	cp helloworld.dll $(EXTRA)
+	cp helloworld.dll $(EXTERNALS)
 
 uninstall:
-	cd $(EXTRA) && rm helloworld.dll
+	cd $(EXTERNALS) && rm helloworld.dll
